@@ -152,7 +152,7 @@ defmodule(Jaeger.Thrift.Agent.Zipkin.ZipkinCollector) do
     def(handle_thrift("submitZipkinBatch", binary_data, handler_module)) do
       case(Elixir.Jaeger.Thrift.Agent.Zipkin.ZipkinCollector.SubmitZipkinBatchArgs.BinaryProtocol.deserialize(binary_data)) do
         {%Jaeger.Thrift.Agent.Zipkin.ZipkinCollector.SubmitZipkinBatchArgs{spans: spans}, ""} ->
-          try() do
+          try do
             rsp = handler_module.submit_zipkin_batch(spans)
             (
               response = %Jaeger.Thrift.Agent.Zipkin.ZipkinCollector.SubmitZipkinBatchResponse{success: rsp}

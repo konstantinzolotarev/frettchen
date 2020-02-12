@@ -1,11 +1,11 @@
-defmodule Frettchen.Trace do 
+defmodule Frettchen.Trace do
   @moduledoc """
-  A Trace is a process that collects spans. When a span 
+  A Trace is a process that collects spans. When a span
   is created it registers with the process and when it is closed
   it removes itself from the process and gets sent
-  to the reporter that is has been configured for. A Trace can be configured 
+  to the reporter that is has been configured for. A Trace can be configured
   to act differently based on need. This allows you to create some traces
-  that get sent to Jaeger, and other that get logged or sent to null. 
+  that get sent to Jaeger, and other that get logged or sent to null.
   You can even configure the port numbers for your collectors so Traces
   can go to different collectors.
   """
@@ -14,12 +14,12 @@ defmodule Frettchen.Trace do
   alias Jaeger.Thrift.Span
 
   defstruct configuration: nil, id: nil, service_name: nil, spans: %{}, timeout: nil
-  
+
   # Public API
 
   @doc """
-  Starts a new Trace process with a passed service name and options for a 
-  custom id, configuration, and timeout in millieseconds. The current custom timeout 
+  Starts a new Trace process with a passed service name and options for a
+  custom id, configuration, and timeout in millieseconds. The current custom timeout
   is 2 minutes (2 * 60 * 1000)
   """
   def start(service_name, options \\ []) do
@@ -40,9 +40,9 @@ defmodule Frettchen.Trace do
     GenServer.cast({:global, {:frettchen, span.trace_id_low}}, {:add_span, span})
     span
   end
-  
+
   @doc """
-  Returns a trace processs based on the trace_low_id inside a span. Usefull 
+  Returns a trace processs based on the trace_low_id inside a span. Usefull
   for getting a trace when a span is passed between functions.
   """
   def get(%Span{} = span) do
@@ -69,7 +69,7 @@ defmodule Frettchen.Trace do
     GenServer.call({:global, {:frettchen, span.trace_id_low}}, {:resolve_span, span})
     span
   end
- 
+
   @doc """
   Returns a map of all the spans inside a trace.
   """
@@ -78,7 +78,7 @@ defmodule Frettchen.Trace do
   end
 
   @doc """
-  Terminates the trace process 
+  Terminates the trace process
   """
   def terminate(%Trace{} = trace) do
     GenServer.call({:global, {:frettchen, trace.id}}, :terminate)
@@ -96,14 +96,14 @@ defmodule Frettchen.Trace do
 
   def handle_call({:resolve_span, span}, _from, trace) do
     trace = %{trace | spans: Map.merge(trace.spans, Map.put(%{}, span.span_id, span))}
-    Frettchen.Collector.add({span.span_id, trace})  
+    Frettchen.Collector.add({span.span_id, trace})
     {:reply, trace, %{trace | spans: Map.delete(trace.spans, span.span_id)}}
   end
 
   def handle_call(:terminate, _from, state) do
     {:stop, :normal, :ok, state}
   end
-  
+
   def handle_cast({:add_span, span}, trace) do
     {:noreply, %{trace | spans: Map.merge(trace.spans, Map.put(%{}, span.span_id, span))}}
   end

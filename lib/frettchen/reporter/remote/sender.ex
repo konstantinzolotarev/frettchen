@@ -1,10 +1,10 @@
 defmodule Frettchen.Reporter.Sender do
   @moduledoc """
-  The Sender module takes a span and its 
+  The Sender module takes a span and its
   associated Trace configuration from a
-  remote reporter and sends it either to 
+  remote reporter and sends it either to
   a UDP port in case the Trace is configured
-  for an Agent, or a TCP port in case the 
+  for an Agent, or a TCP port in case the
   Trace is configured for a collector.
   """
   alias Frettchen.{Configuration, Trace}
@@ -14,7 +14,7 @@ defmodule Frettchen.Reporter.Sender do
     span = trace.spans[span_id]
     target = trace.configuration.target
     payload = prepare_payload(span, trace, target)
-    Task.start_link(fn -> 
+    Task.start_link(fn ->
       send(payload, target, trace.configuration)
     end)
   end
@@ -40,14 +40,14 @@ defmodule Frettchen.Reporter.Sender do
     }
 
     emit_batch
-    |> Agent.EmitBatchArgs.serialize() 
+    |> Agent.EmitBatchArgs.serialize()
     |> IO.iodata_to_binary()
   end
 
   defp prepare_payload(%Span{} = span, %Trace{} = trace, :collector) do
     span
     |> prepare_batch(trace)
-    |> Batch.serialize() 
+    |> Batch.serialize()
     |> IO.iodata_to_binary()
   end
 
@@ -56,7 +56,7 @@ defmodule Frettchen.Reporter.Sender do
       Tag.new |
       key: "client.version",
       v_str: "Elixir Frettchen #{Application.spec(:frettchen, :vsn)}",
-      v_type: 0 
+      v_type: 0
     }
     [version_tag]
   end
@@ -65,15 +65,15 @@ defmodule Frettchen.Reporter.Sender do
     {:ok, server} = :gen_udp.open(0)
     agent_host = String.to_charlist(configuration.agent_host)
     message = Thrift.Protocol.Binary.serialize(
-      :message_begin, 
+      :message_begin,
       {
-        :oneway, 
-        Frettchen.Helpers.current_time(), 
+        :oneway,
+        Frettchen.Helpers.current_time(),
         "emitBatch"
       }
     )
     :gen_udp.send(
-      server, 
+      server,
       agent_host,
       configuration.agent_port,
       [message | data]

@@ -152,7 +152,7 @@ defmodule(Jaeger.Thrift.Collector) do
     def(handle_thrift("submitBatches", binary_data, handler_module)) do
       case(Elixir.Jaeger.Thrift.Collector.SubmitBatchesArgs.BinaryProtocol.deserialize(binary_data)) do
         {%Jaeger.Thrift.Collector.SubmitBatchesArgs{batches: batches}, ""} ->
-          try() do
+          try do
             rsp = handler_module.submit_batches(batches)
             (
               response = %Jaeger.Thrift.Collector.SubmitBatchesResponse{success: rsp}

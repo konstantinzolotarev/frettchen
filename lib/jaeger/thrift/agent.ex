@@ -162,7 +162,7 @@ defmodule(Jaeger.Thrift.Agent) do
     def(handle_thrift("emitBatch", binary_data, handler_module)) do
       case(Elixir.Jaeger.Thrift.Agent.EmitBatchArgs.BinaryProtocol.deserialize(binary_data)) do
         {%Jaeger.Thrift.Agent.EmitBatchArgs{batch: batch}, ""} ->
-          try() do
+          try do
             rsp = handler_module.emit_batch(batch)
             (
               _ = rsp
@@ -184,7 +184,7 @@ defmodule(Jaeger.Thrift.Agent) do
     def(handle_thrift("emitZipkinBatch", binary_data, handler_module)) do
       case(Elixir.Jaeger.Thrift.Agent.EmitZipkinBatchArgs.BinaryProtocol.deserialize(binary_data)) do
         {%Jaeger.Thrift.Agent.EmitZipkinBatchArgs{spans: spans}, ""} ->
-          try() do
+          try do
             rsp = handler_module.emit_zipkin_batch(spans)
             (
               _ = rsp

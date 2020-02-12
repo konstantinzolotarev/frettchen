@@ -12,7 +12,7 @@ defmodule Frettchen.Span do
   alias Frettchen.Trace
 
   @doc """
-  close/1 closes a span by calculating the duration as the 
+  close/1 closes a span by calculating the duration as the
   difference between the start time and the current time
   """
   def close(%Span{} = span) do
@@ -25,17 +25,17 @@ defmodule Frettchen.Span do
   """
   def extract(string) do
     [trace_id_low, span_id, parent_span_id, _bits] = String.split(string, ":")
-    trace_id_low = 
+    trace_id_low =
       trace_id_low
       |> String.upcase()
       |> Integer.parse(16)
       |> elem(0)
-    span_id = 
+    span_id =
       span_id
       |> String.upcase()
       |> Integer.parse(16)
       |> elem(0)
-    parent_span_id = 
+    parent_span_id =
       parent_span_id
       |> String.upcase()
       |> Integer.parse(16)
@@ -55,10 +55,10 @@ defmodule Frettchen.Span do
   a span.
   """
   def log(%Span{} = span, key, value) when is_binary(key) do
-    tag = 
-      %{Tag.new | key: key} 
+    tag =
+      %{Tag.new | key: key}
       |> tag_merge_value(value)
-    
+
     log =
       %{Log.new | timestamp: Frettchen.Helpers.current_time(), fields: [tag]}
 
@@ -74,7 +74,7 @@ defmodule Frettchen.Span do
     %{new_span(name) | trace_id_low: span.trace_id_low, parent_span_id: span.span_id}
     |> Trace.add_span()
   end
-  
+
   @doc """
   open/2 creates a new span with a given name and
   assigns the passed trace as the trace_id. The span
@@ -97,7 +97,7 @@ defmodule Frettchen.Span do
 
   @doc """
   open/3 creates a new span with a given name and
-  assigns the passed trace as the trace_id as well 
+  assigns the passed trace as the trace_id as well
   as a parent_span_id. The span is then added to the Trace process
   """
   def open(%Trace{} = trace, name, parent_span_id) do
@@ -110,15 +110,15 @@ defmodule Frettchen.Span do
   a span.
   """
   def tag(%Span{} = span, key, value) when is_binary(key) do
-    tag = 
-      %{Tag.new | key: key} 
+    tag =
+      %{Tag.new | key: key}
       |> tag_merge_value(value)
 
     %{span | tags: [tag | span.tags]}
   end
 
   defp new_span(name) do
-    %{Span.new() | 
+    %{Span.new() |
       operation_name: Frettchen.Helpers.format_name(name),
       trace_id_low: 0,
       trace_id_high: 0,
@@ -128,7 +128,7 @@ defmodule Frettchen.Span do
       start_time: Frettchen.Helpers.current_time(),
       logs: [],
       tags: []
-    } 
+    }
   end
 
   defp tag_merge_value(%Tag{} = tag, value) when is_binary(value) do

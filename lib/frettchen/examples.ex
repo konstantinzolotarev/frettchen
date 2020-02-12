@@ -4,7 +4,7 @@ defmodule Frettchen.Examples do
   """
 
   alias Frettchen.{Span, Trace}
-  
+
   def simple_trace() do
     Trace.start("foo")
     |> Span.open("bar")
@@ -14,7 +14,7 @@ defmodule Frettchen.Examples do
   def parent_span() do
     span = Trace.start("foo")
            |> Span.open("bar")
-      
+
     child_span = Span.open(span, "biz")
     Span.close(child_span)
     Span.close(span)
@@ -40,11 +40,11 @@ defmodule Frettchen.Examples do
   end
 
   def explicit_start() do
-    trace = Trace.start("foo")
+    trace = Trace.start("foo") |> IO.inspect()
     span = Span.open(trace, "bar")
-    data = Span.inject(span)
+    data = Span.inject(span) |> String.downcase()
     IO.inspect(data)
-    ids = Span.extract(data)
+    ids = Span.extract(data) |> IO.inspect()
 
     explicit_trace = Trace.get(ids.trace_id_low)
     explicit_span = explicit_trace.spans[ids.span_id]

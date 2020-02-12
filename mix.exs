@@ -30,8 +30,8 @@ defmodule Frettchen.Mixfile do
     [
       {:credo, "~> 0.9.1", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.16", only: :dev, runtime: false},
-      {:gen_stage, "~> 0.13"},
-      {:httpoison, "~> 1.0"},
+      {:gen_stage, "~> 1.0"},
+      {:httpoison, "~> 1.6"},
       {:socket, "~> 0.3", only: [:test]},
       {:thrift, github: "pinterest/elixir-thrift"}
     ]
@@ -39,7 +39,7 @@ defmodule Frettchen.Mixfile do
 
   defp description do
     """
-    Frettchen is a Jaeger client written completely in Elixir. 
+    Frettchen is a Jaeger client written completely in Elixir.
     """
   end
 
